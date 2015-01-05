@@ -24,4 +24,8 @@ $ go get -u github.com/samalba/dockerclient
 $ go get -u github.com/nathanleclaire/dstart
 ```
 
-Now you have the `dstart` binary installed and you are just a `dstart` away from restart-ey goodness.
+Now you have the `dstart` binary installed and you are just a `sudo dstart` away from restart-ey goodness.  The `sudo` is needed in order to restart the Docker system service.
+
+```
+$ sudo dstart
+```
