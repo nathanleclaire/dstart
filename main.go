@@ -36,7 +36,7 @@ func getLinks(info dockerclient.ContainerInfo) ([]string, error) {
 	return links, nil
 }
 
-func waitForDeps(deps []string, rollers chan string) {
+func waitForDeps(deps []string, rollers <-chan string) {
 	depRemaining := make(map[string]bool)
 	for _, link := range deps {
 		depRemaining[link] = true
@@ -53,7 +53,7 @@ func waitForDeps(deps []string, rollers chan string) {
 	}
 }
 
-func pollRestart(c dockerclient.Container, done chan string, rollers chan string) {
+func pollRestart(c dockerclient.Container, done chan<- string, rollers <-chan string) {
 	log.Infoln("Initiating restart for ", c.Id)
 
 	info, err := docker.InspectContainer(c.Id)
@@ -158,7 +158,7 @@ func main() {
 		r := <-restartDone
 		log.Debugln("Read from channel that", r, "started")
 		for _, rMsg := range rMsgs {
-			go func(rMsg chan string, r string) {
+			go func(rMsg chan<- string, r string) {
 				log.Debugln("SENDING", r)
 				rMsg <- r
 			}(rMsg, r)
