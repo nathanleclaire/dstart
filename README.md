@@ -1,5 +1,7 @@
-dstart
-======
+```
+ _| __|_ _ .__|_
+(_|_\ | (_||  | 
+```
 
 Want to restart your Docker daemon but not nuke all of the containers you have running?  Always forget to run them with `--restart` or don't necessarily want to?  Then `dstart` may be for you!
 
