@@ -108,13 +108,13 @@ func main() {
 
 	for _, c := range containers {
 		rMsgs = append(rMsgs, make(chan string))
-		go func(id string) {
+		go func(id string, stopMsgs chan<- bool) {
 			log.Infoln("Initiating stop for container", id)
 			if err := docker.StopContainer(id, 30); err != nil {
 				log.Fatal(err)
 			}
 			stopMsgs <- true
-		}(c.Id)
+		}(c.Id, stopMsgs)
 	}
 
 	// wait for all containers to be stopped
