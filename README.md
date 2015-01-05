@@ -3,6 +3,8 @@
 (_|_\ | (_||  | 
 ```
 
+![dstart](https://cloud.githubusercontent.com/assets/1476820/5608618/d936079e-943e-11e4-858b-50e147132242.jpg)
+
 Want to restart your Docker daemon but not nuke all of the containers you have running?  Always forget to run them with `--restart` or don't necessarily want to?  Then `dstart` may be for you!
 
 `dstart` will stop all of the containers you have running, restart the Docker daemon, then restart all of the containers in the correct order- so your links are preserved!
