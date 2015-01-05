@@ -98,17 +98,14 @@ func main() {
 	}
 
 	restartDone := make(chan string)
-
-	// todo: should this be slice?
-	// i.e. is there any reason to track the id in key?
 	rMsgs := []chan string{}
+	stopMsgs := make(chan bool)
 
 	containers, err := docker.ListContainers(false, false, "")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	stopMsgs := make(chan bool)
 	for _, c := range containers {
 		rMsgs = append(rMsgs, make(chan string))
 		go func(id string) {
