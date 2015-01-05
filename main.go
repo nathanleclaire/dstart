@@ -18,7 +18,8 @@ func getNamesFromRawLinks(rawLinks []string) ([]string, error) {
 	names := []string{}
 	for _, rawLinks := range rawLinks {
 		// ORIGINAL : "/redis:/adoring_stallman/redis"
-		// DESIRED  : "adoring_stallman"
+		// DESIRED  : "redis" (the last bit of the string)
+		// TODO: can this be simplified?
 		name := strings.Split(strings.Split(rawLinks, ":")[1], "/")[2]
 		names = append(names, name)
 	}
