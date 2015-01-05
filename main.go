@@ -40,8 +40,6 @@ func pollRestart(c dockerclient.Container, done chan string, rollers chan string
 	log.Infoln("Initiating restart for ", c.Id)
 	depRemaining := make(map[string]bool)
 
-	// TODO: should we just scrap getLinks() function
-	// altogether if I need to inline this anyway?
 	info, err := docker.InspectContainer(c.Id)
 	if err != nil {
 		log.Fatal(err)
