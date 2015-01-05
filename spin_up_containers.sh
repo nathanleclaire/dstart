@@ -8,7 +8,7 @@ docker run -d --name redis2 redis
 docker run -d --name data-container -v /data busybox true
 
 # now let's really let 'em have it
-for i in {0..$1}; do
+for i in $(seq 0 $1); do
     docker run -d --link redis1:redis1 redis 
     docker run -d --link redis1:redis1 --link redis2:redis2 redis 
     docker run -d --link redis2:redis2 redis 
