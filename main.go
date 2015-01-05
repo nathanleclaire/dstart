@@ -32,12 +32,12 @@ func getLinks(info dockerclient.ContainerInfo) ([]string, error) {
 	if err != nil {
 		return []string{}, err
 	}
-	log.Infoln("links for", info.Name, "are", links)
+	log.Debugln("links for", info.Name, "are", links)
 	return links, nil
 }
 
 func pollRestart(c dockerclient.Container, done chan string, rollers chan string) {
-	log.Infoln("Initiating poll restart for ", c.Id)
+	log.Infoln("Initiating restart for ", c.Id)
 	depRemaining := make(map[string]bool)
 
 	// TODO: should we just scrap getLinks() function
@@ -60,7 +60,7 @@ func pollRestart(c dockerclient.Container, done chan string, rollers chan string
 		for lastRestarted := range rollers {
 			log.Debugln("Read", lastRestarted, "from rollers in goroutine for", c.Id[:7])
 			depRemaining[lastRestarted] = false
-			log.Infoln("depRemaining is", depRemaining)
+			log.Debugln("depRemaining is", depRemaining)
 			for _, depRemains := range depRemaining {
 				if depRemains {
 					continue DepCheck
@@ -109,10 +109,9 @@ func main() {
 
 	stopMsgs := make(chan bool)
 	for _, c := range containers {
-		log.Infoln(c.Id, c.Names)
 		rMsgs = append(rMsgs, make(chan string))
 		go func(id string) {
-			log.Infoln("Stopping container", id)
+			log.Infoln("Initiating stop for container", id)
 			if err := docker.StopContainer(id, 30); err != nil {
 				log.Fatal(err)
 			}
