@@ -26,11 +26,7 @@ func getNamesFromRawLinks(rawLinks []string) ([]string, error) {
 	return names, nil
 }
 
-func getLinks(c dockerclient.Container) ([]string, error) {
-	info, err := docker.InspectContainer(c.Id)
-	if err != nil {
-		return []string{}, err
-	}
+func getLinks(info dockerclient.ContainerInfo) ([]string, error) {
 	rawLinks := info.HostConfig.Links
 	links, err := getNamesFromRawLinks(rawLinks)
 	if err != nil {
@@ -43,7 +39,15 @@ func getLinks(c dockerclient.Container) ([]string, error) {
 func pollRestart(c dockerclient.Container, done chan string, rollers chan string) {
 	log.Infoln("Initiating poll restart for ", c.Id)
 	depRemaining := make(map[string]bool)
-	deps, err := getLinks(c)
+
+	// TODO: should we just scrap getLinks() function
+	// altogether if I need to inline this anyway?
+	info, err := docker.InspectContainer(c.Id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	deps, err := getLinks(*info)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,13 +68,6 @@ func pollRestart(c dockerclient.Container, done chan string, rollers chan string
 			}
 			break DepCheck
 		}
-	}
-
-	// TODO: should we just scrap getLinks() function
-	// altogether if I need to inline this anyway?
-	info, err := docker.InspectContainer(c.Id)
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	log.Debugln("Starting", c.Id)
