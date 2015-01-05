@@ -89,6 +89,7 @@ func main() {
 	var (
 		err error
 	)
+	start := time.Now()
 	docker, err = dockerclient.NewDockerClient("unix:///var/run/docker.sock", nil)
 	if err != nil {
 		log.Fatal(err)
@@ -166,5 +167,6 @@ func main() {
 	for _, rMsg := range rMsgs {
 		close(rMsg)
 	}
-	log.Infof("Restarted %d containers", len(containers))
+
+	log.Infof("Restarted the daemon and %d containers in %s", len(containers), time.Since(start))
 }
