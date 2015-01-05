@@ -54,7 +54,7 @@ func pollRestart(c dockerclient.Container, done chan string, rollers chan string
 	if len(deps) > 0 {
 	DepCheck:
 		for lastRestarted := range rollers {
-			log.Warnln("Read", lastRestarted, "from rollers in goroutine for", c.Id[:7])
+			log.Debugln("Read", lastRestarted, "from rollers in goroutine for", c.Id[:7])
 			depRemaining[lastRestarted] = false
 			log.Infoln("depRemaining is", depRemaining)
 			for _, depRemains := range depRemaining {
@@ -73,7 +73,7 @@ func pollRestart(c dockerclient.Container, done chan string, rollers chan string
 		log.Fatal(err)
 	}
 
-	log.Warnln("Starting", c.Id)
+	log.Debugln("Starting", c.Id)
 
 	// Alright, all the deps are done restarting,
 	// so let's rock and roll!
@@ -86,7 +86,7 @@ func pollRestart(c dockerclient.Container, done chan string, rollers chan string
 
 	// Just catch the rest until the channel closes
 	for lastRestarted := range rollers {
-		log.Warnln("Read", lastRestarted, "from rollers in goroutine for", c.Id[:7])
+		log.Debugln("Read", lastRestarted, "from rollers in goroutine for", c.Id[:7])
 	}
 }
 
@@ -159,11 +159,10 @@ func main() {
 
 	for i := 0; i < len(containers); i++ {
 		r := <-restartDone
-		log.Infoln("Read from channel that", r, "started")
+		log.Debugln("Read from channel that", r, "started")
 		for _, rMsg := range rMsgs {
 			go func(rMsg chan string, r string) {
-				log.Warnln("SENDING", r)
-				// TODO: better way to implement this?
+				log.Debugln("SENDING", r)
 				rMsg <- r
 			}(rMsg, r)
 		}
