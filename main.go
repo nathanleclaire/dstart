@@ -36,9 +36,25 @@ func getLinks(info dockerclient.ContainerInfo) ([]string, error) {
 	return links, nil
 }
 
+func waitForDeps(deps []string, rollers chan string) {
+	depRemaining := make(map[string]bool)
+	for _, link := range deps {
+		depRemaining[link] = true
+	}
+	for lastRestarted := range rollers {
+		depRemaining[lastRestarted] = false
+		log.Debugln("depRemaining is", depRemaining)
+		for _, depRemains := range depRemaining {
+			if depRemains {
+				continue
+			}
+		}
+		return
+	}
+}
+
 func pollRestart(c dockerclient.Container, done chan string, rollers chan string) {
 	log.Infoln("Initiating restart for ", c.Id)
-	depRemaining := make(map[string]bool)
 
 	info, err := docker.InspectContainer(c.Id)
 	if err != nil {
@@ -49,23 +65,9 @@ func pollRestart(c dockerclient.Container, done chan string, rollers chan string
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, link := range deps {
-		depRemaining[link] = true
-	}
 
 	if len(deps) > 0 {
-	DepCheck:
-		for lastRestarted := range rollers {
-			log.Debugln("Read", lastRestarted, "from rollers in goroutine for", c.Id[:7])
-			depRemaining[lastRestarted] = false
-			log.Debugln("depRemaining is", depRemaining)
-			for _, depRemains := range depRemaining {
-				if depRemains {
-					continue DepCheck
-				}
-			}
-			break DepCheck
-		}
+		waitForDeps(deps, rollers)
 	}
 
 	log.Debugln("Starting", c.Id)
