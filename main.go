@@ -137,10 +137,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// TODO: this actually works
-	// to prevent the race condition ಠ_ಠ
-	// use something other than a sleep.
-	time.Sleep(5 * time.Second)
+	// TODO: Hack because the socket accepts
+	// connections before the API is ready to
+	// accept requests.
+	for {
+		_, err := docker.Info()
+		if err != nil {
+			log.Debug(err)
+		} else {
+			log.Info("Daemon restarted successfully")
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 
 	// initiate each container polling for its deps to
 	// know when it can restart
